@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version="6.0">
+
+    <filter>
+        <filter-name>encoding</filter-name>
+        <filter-class>com.sangjae.chap06filter.section02.uses.EncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding-type</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>encoding</filter-name>
+        <url-pattern>/*</url-pattern> <!-- 이런식으로 매핑하면 모든 서블릿이 필터를 타게 한다 -->
+    </filter-mapping>
+
+
+</web-app>
