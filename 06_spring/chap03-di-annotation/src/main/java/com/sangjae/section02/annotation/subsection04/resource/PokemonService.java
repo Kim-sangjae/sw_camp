@@ -1,6 +1,6 @@
-package com.ohgiraffers.section02.annotation.subsection04.resource;
+package com.sangjae.section02.annotation.subsection04.resource;
 
-import com.ohgiraffers.section02.annotation.common.Pokemon;
+import com.sangjae.section02.annotation.common.Pokemon;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
