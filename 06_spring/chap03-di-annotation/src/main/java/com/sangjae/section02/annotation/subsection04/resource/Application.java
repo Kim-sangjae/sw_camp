@@ -1,4 +1,4 @@
-package com.sangjae.section02.annotation.subsection01.primary;
+package com.sangjae.section02.annotation.subsection04.resource;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
