@@ -1,0 +1,40 @@
+package com.sangjae.section02.initdestroy.subsection02.annotation;
+
+import com.sangjae.common.Beverage;
+import com.sangjae.common.Bread;
+import com.sangjae.common.Product;
+import com.sangjae.common.ShoppingCart;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+public class Application {
+    public static void main(String[] args) {
+        /* 빈 설정 파일을 기반으로 IoC 컨테이너 생성 */
+        ApplicationContext context = new AnnotationConfigApplicationContext(
+                "com.sangjae.section02.initdestroy.subsection02.annotation"
+        );
+        /* 붕어빵, 딸기우유, 지리산 암반수 등의 빈 객체를 반환 받는다. */
+        Product carpBread = context.getBean("carpBread", Bread.class);
+        Product milk = context.getBean("milk", Beverage.class);
+        Product water = context.getBean("water", Beverage.class);
+        /* 첫 번째 손님이 쇼핑 카트를 꺼낸다. */
+        ShoppingCart cart1 = context.getBean("cart", ShoppingCart.class);
+        cart1.addItem(carpBread);
+        cart1.addItem(milk);
+        /* 붕어빵과 딸기우유가 담겨있다. */
+        System.out.println("cart1에 담긴 내용 : " + cart1.getItem());
+        /* 두 번째 손님이 쇼핑 카트를 꺼낸다. */
+        ShoppingCart cart2 = context.getBean("cart", ShoppingCart.class);
+        cart2.addItem(water);
+        /* 지리산암반수만 담겨있다. */
+        System.out.println("cart2에 담긴 내용 : " + cart2.getItem());
+        /* 두 카트의 hashcode를 출력해보면 다른 것을 볼 수 있다. */
+        System.out.println("cart1의 hashcode : " + cart1.hashCode());
+        System.out.println("cart2의 hashcode : " + cart2.hashCode());
+
+        /* Spring 컨테이너가 종료되기 전에 메인 스레드의 동작이 종료되고 프로세스가 종료 되어
+        * destroy method는 확인되지 않음. 명시적으로 컨테이너를 종료해서 확인. */
+        ((AnnotationConfigApplicationContext)context).close();
+
+    }
+}
