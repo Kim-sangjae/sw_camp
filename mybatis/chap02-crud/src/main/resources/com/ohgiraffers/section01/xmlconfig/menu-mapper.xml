@@ -71,9 +71,9 @@
         menu_code = #{menuCode}
     </update>
 
-    <delete id="deleteMenu" parameterType="int">
-        delete from
-        tbl_menu
+    <!-- _int 와 같은 파라미터타입의 별칭들은 mybatis에서 기본적으로 정해놓은 별칭의 이름이다 (mybatis 홈페이지 참조)-->
+    <delete id="deleteMenu" parameterType="_int">
+        delete from tbl_menu
         where
         menu_code = #{menuCode}
     </delete>
