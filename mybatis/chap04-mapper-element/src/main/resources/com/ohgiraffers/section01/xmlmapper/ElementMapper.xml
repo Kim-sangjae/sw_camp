@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ohgiraffers.section01.xmlmapper.ElementMapper">
+
+    <!-- 1. <resultMap> 테스트
+     autoMapping : 조회 결과를 type에 자동으로 매핑할지 선택
+      extends : 작성 된 resultMap을 확장(상속) 하는 resultMap 작성 -->
+    <resultMap id="menuResultMap1" type="MenuDTO" autoMapping="false">
+        <id property="menuCode" column="menu_code"/>
+        <result property="menuName" column="menu_name"/>
+    </resultMap>
+
+    <resultMap id="menuResultMap2" type="MenuDTO" extends="menuResultMap1" autoMapping="false">
+        <result property="menuPrice" column="menu_price"/>
+        <result property="categoryCode" column="category_code"/>
+    </resultMap>
+
+    <select id="selectResultMap" resultMap="menuResultMap2">
+      SELECT
+             menu_code
+           , menu_name
+           , menu_price
+           , category_code
+           , orderable_status
+        FROM tbl_menu
+       WHERE orderable_status = 'Y'
+        ORDER BY menu_name
+  </select>
+
+    <!-- 2. <association> 테스트
+        : 1:1 관계의 매핑에서 사용되는 엘리먼트-->
+    <resultMap id="menuAndCategoryResultMap" type="MenuAndCategoryDTO">
+        <id property="menuCode" column="menu_code"/>
+        <result property="menuName" column="menu_name"/>
+        <result property="menuPrice" column="menu_price"/>
+        <result property="orderableStatus" column="orderable_status"/>
+        <!--
+         association은 id , result 보다 위에 작성 되면 컴파일 에러가난다
+         (1) 엘리먼트 내부에 작성해서 매핑
+         (2) 별도의 resultMap 을 작성해서 매핑-->
+
+        <association property="category" javaType="CategoryDTO">
+            <id property="categoryCode" column="category_code"/>
+            <result property="categoryName" column="category_name"/>
+            <result property="refCategoryCode" column="ref_category_code"/>
+        </association>
+    </resultMap>
+
+
+    <resultMap id="categoryResultMap" type="CategoryDTO">
+        <id property="categoryCode" column="category_code"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="refCategoryCode" column="ref_category_code"/>
+    </resultMap>
+
+    <select id="selectResultMapAssociationTest" resultMap="menuAndCategoryResultMap">
+        SELECT
+        a.menu_code
+        , a.menu_name
+        , a.menu_price
+        , a.category_code
+        , a.orderable_status
+        , b.category_code
+        , b.category_name
+        , b.ref_category_code
+        FROM tbl_menu a
+        join tbl_category b on (a.category_code = b.category_code)
+        WHERE orderable_status = 'Y'
+        ORDER BY menu_name
+    </select>
+
+
+    <!-- 3. <collection> 테스트 : 1:n 의 관계를 매핑 -->
+    <resultMap id="categoryAndMenuResultMap" type="CategoryAndMenuDTO">
+        <id property="categoryCode" column="category_code"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="refCategoryCode" column="ref_category_code"/>
+
+        <collection property="menuList" ofType="MenuDTO">
+            <id property="menuCode" column="menu_code"/>
+            <result property="menuName" column="menu_name"/>
+            <result property="menuPrice" column="menu_price"/>
+            <result property="orderableStatus" column="orderable_status"/>
+        </collection>
+
+    </resultMap>
+    <select id="selectResultMapCollectionTest" resultMap="categoryAndMenuResultMap">
+        select
+            a.category_code,
+            a.category_name,
+            a.ref_category_code,
+            b.menu_code,
+            b.menu_name,
+            b.menu_price,
+            b.orderable_status
+        from tbl_category a
+        left join tbl_menu b on (a.category_code = b.category_code)
+        order by a.category_code
+    </select>
+</mapper>
