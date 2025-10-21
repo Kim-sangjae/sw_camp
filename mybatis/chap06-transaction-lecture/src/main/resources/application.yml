@@ -1,0 +1,14 @@
+# DataSource Setting
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3306/menudb
+    username: swcamp
+    password: swcamp
+
+# MyBatis Setting
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+  type-aliases-package: com.ohgiraffers.transactionlecture
+  mapper-locations: mappers/**/*.xml
