@@ -7,7 +7,7 @@ public class EntityManagerFactoryGenerator {
     private static EntityManagerFactory factory
             = Persistence.createEntityManagerFactory("jpatest");
 
-    private EntityManagerFactoryGenerator(){}
+    private EntityManagerFactoryGenerator() {}
 
-    public static EntityManagerFactory getInstance(){return factory;}
+    public static EntityManagerFactory getInstance() { return factory; }
 }
