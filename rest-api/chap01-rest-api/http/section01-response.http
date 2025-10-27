@@ -1,0 +1,6 @@
+### get image
+GET localhost:8080/response/image
+
+### get list
+GET localhost:8080/response/list
+
