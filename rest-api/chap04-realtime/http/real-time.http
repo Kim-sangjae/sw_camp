@@ -1,0 +1,18 @@
+### 배송상태 변경
+POST http://localhost:8080/long-polling/order-status/update
+Content-Type: application/json
+
+{
+  "userId": "user1",
+  "status": "배송 완료"
+}
+
+### 친구 요청 발생 (SSE 알림 테스트)
+POST http://localhost:8080/sse/friend-request/send
+Content-Type: application/json
+
+{
+  "fromUser": "user3",
+  "toUser": "user1"
+}
+

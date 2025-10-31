@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+</head>
+<body>
+
+<!--<h1>Polling 테스트</h1>-->
+<!--<script>-->
+<!--    setInterval(() => {-->
+<!--        fetch("/polling/notification")-->
+<!--            .then(res => res.text())-->
+<!--            .then(console.log);-->
+<!--    }, 5000);-->
+<!--</script>-->
+
+<!--<h1>Long Polling 테스트</h1>-->
+<!--<script>-->
+<!--    const longPollingClientId = "user1";-->
+
+<!--    function startLongPolling() {-->
+<!--        fetch("/long-polling/connect/" + longPollingClientId)-->
+<!--            .then(response => response.text())-->
+<!--            .then(data => {-->
+<!--                console.log("Long Polling 수신:", data);-->
+<!--                startLongPolling();-->
+<!--            })-->
+<!--            .catch(err => {-->
+<!--                console.error("Long Polling 오류:", err);-->
+<!--                setTimeout(startLongPolling, 3000);-->
+<!--            });-->
+<!--    }-->
+
+<!--    startLongPolling();-->
+<!--</script>-->
+
+<!--<h1>SSE 알림 수신 테스트</h1>-->
+<!--<script>-->
+<!--    const clientId = "user1";-->
+<!--    const eventSource = new EventSource("/sse/connect/" + clientId);-->
+
+<!--    eventSource.onopen = () => {-->
+<!--        console.log("SSE 연결됨");-->
+<!--    };-->
+
+<!--    eventSource.addEventListener("connect", event => {-->
+<!--        console.log("초기 연결:", event.data);-->
+<!--    });-->
+
+<!--    eventSource.addEventListener("notification", event => {-->
+<!--        console.log("새 알림 수신:", event.lastEventId, event.data);-->
+<!--    });-->
+
+<!--    eventSource.onerror = (event) => {-->
+<!--        console.error("SSE 연결 오류 또는 종료:", event);-->
+<!--    };-->
+<!--</script>-->
+
+<!--<h1>WebSocket 채팅 테스트</h1>-->
+<!--<h2>채팅방 입장</h2>-->
+<!--<input type="text" id="username" placeholder="사용자 이름 입력">-->
+<!--<button onclick="connectWebSocket()">입장</button>-->
+
+<!--<h2>채팅방: room1</h2>-->
+<!--<div id="chat-box"></div>-->
+
+<!--<input type="text" id="message" placeholder="메시지 입력">-->
+<!--<button onclick="sendMessage()">보내기</button>-->
+
+<!--<script>-->
+<!--    let socket = null;-->
+<!--    let username = '';-->
+<!--    const roomId = "room1";-->
+
+<!--    function connectWebSocket() {-->
+<!--        username = document.getElementById("username").value.trim();-->
+<!--        if (!username) {-->
+<!--            alert("사용자 이름을 입력하세요.");-->
+<!--            return;-->
+<!--        }-->
+
+<!--        socket = new WebSocket("ws://localhost:8080/ws-chat");-->
+
+<!--        socket.onopen = function () {-->
+<!--            print("연결됨: " + username);-->
+
+<!--            // 입장 메시지를 서버에 전송 (roomId와 sender만 포함)-->
+<!--            const joinMessage = {-->
+<!--                roomId: roomId,-->
+<!--                sender: username,-->
+<!--                content: "[입장]"-->
+<!--            };-->
+<!--            socket.send(JSON.stringify(joinMessage));-->
+<!--        };-->
+
+<!--        socket.onmessage = function (event) {-->
+<!--            print(event.data);-->
+<!--        };-->
+
+<!--        socket.onerror = function () {-->
+<!--            print("오류 발생");-->
+<!--        };-->
+
+<!--        socket.onclose = function () {-->
+<!--            print("연결 종료됨");-->
+<!--        };-->
+<!--    }-->
+
+<!--    function sendMessage() {-->
+<!--        const content = document.getElementById("message").value.trim();-->
+<!--        if (!content || !socket) return;-->
+
+<!--        const message = {-->
+<!--            roomId: roomId,-->
+<!--            sender: username,-->
+<!--            content: content-->
+<!--        };-->
+
+<!--        socket.send(JSON.stringify(message));-->
+<!--        document.getElementById("message").value = "";-->
+<!--    }-->
+
+<!--    function print(text) {-->
+<!--        const box = document.getElementById("chat-box");-->
+<!--        const line = document.createElement("div");-->
+<!--        line.innerText = text;-->
+<!--        box.appendChild(line);-->
+<!--    }-->
+
+<!--    window.addEventListener("beforeunload", () => {-->
+<!--        if (socket && socket.readyState === WebSocket.OPEN) {-->
+<!--            const leaveMessage = {-->
+<!--                roomId: roomId,-->
+<!--                sender: username,-->
+<!--                content: "[퇴장]"-->
+<!--            };-->
+<!--            socket.send(JSON.stringify(leaveMessage));-->
+<!--            socket.close();-->
+<!--        }-->
+<!--    });-->
+<!--</script>-->
+
+<h1>STOMP 채팅 테스트</h1>
+<h2>채팅방 입장</h2>
+<input type="text" id="username" placeholder="사용자 이름 입력">
+<button onclick="connectStomp()">입장</button>
+
+<h2>채팅방: room1</h2>
+<div id="chat-box"></div>
+
+<input type="text" id="message" placeholder="메시지 입력">
+<button onclick="sendMessage()">보내기</button>
+
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+<script>
+    let stompClient = null;
+    let username = '';
+    const roomId = "room1";
+
+    function connectStomp() {
+        username = document.getElementById("username").value.trim();
+        if (!username) {
+            alert("사용자 이름을 입력하세요.");
+            return;
+        }
+
+        const sock = new SockJS("/stomp-chat");
+        stompClient = Stomp.over(sock);
+
+        stompClient.connect({}, function () {
+            print("연결됨: " + username);
+
+            stompClient.subscribe("/topic/chat/" + roomId, function (message) {
+                const chat = JSON.parse(message.body);
+                if (chat.type === "SYSTEM") {
+                    print(chat.content);
+                } else if (chat.type === "CHAT") {
+                    print(chat.sender + ": " + chat.content);
+                }
+            });
+
+            stompClient.send("/app/chat/join", {}, JSON.stringify({
+                roomId: roomId,
+                sender: username,
+                type: "JOIN"
+            }));
+        });
+    }
+
+    function sendMessage() {
+        const content = document.getElementById("message").value.trim();
+        if (!content || !stompClient) return;
+
+        stompClient.send("/app/chat/send", {}, JSON.stringify({
+            roomId: roomId,
+            sender: username,
+            content: content,
+            type: "CHAT"
+        }));
+
+        document.getElementById("message").value = "";
+    }
+
+    function print(text) {
+        const box = document.getElementById("chat-box");
+        const line = document.createElement("div");
+        line.innerText = text;
+        box.appendChild(line);
+    }
+
+    window.addEventListener("beforeunload", () => {
+        if (stompClient && username) {
+            stompClient.send("/app/chat/leave", {}, JSON.stringify({
+                roomId: roomId,
+                sender: username,
+                type: "LEAVE"
+            }));
+            stompClient.disconnect();
+        }
+    });
+</script>-->
+</body>
+</html>

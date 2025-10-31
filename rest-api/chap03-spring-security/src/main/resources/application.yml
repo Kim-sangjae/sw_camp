@@ -11,14 +11,13 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
   mapper-locations: mappers/**/*.xml
-  type-aliases-package: com.sangjae.springsecurity.query.dto
+  type-aliases-package: com.ohgiraffers.springsecurity.query.dto
 
 jwt:
-  secret: FSlGJbwPrgNJn/Y1uWWCU9snyng6f6SsMSUDmpl003lkFZMTxTxoJHcSGmNfOecqwXRbUMkvIhVv5z7g+JbDPA==
+  secret: BMy11e2DJ8kQ3yarTTTfLb1nWaQRW+xdcLSlZVKsrgvnp89M4WK6tymHE0NpSx5AYuHc6JhbgEnWL5Sl/RpCWg==
   expiration: 1800000
   refresh-expiration: 604800000
