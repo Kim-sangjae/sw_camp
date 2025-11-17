@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>이벤트 핸들러 제거</h1>
+<p>
+    removeEventListener : addEventListener 로 등록한 이벤트
+    핸들러를 제거하는 함수
+</p>
+<button id="btn">클릭해보세요</button>
+<script>
+    const $btn = document.querySelector('#btn');
+    const handleClick = () => alert('클릭했대요~');
+    $btn.addEventListener('click', handleClick); // 이벤트 핸들러 등록
+    $btn.removeEventListener('click', handleClick); // 이벤트 핸들러 제거
+    // 이벤트 핸들러 함수를 참조할 수 없으므로 추후에 제거할 수도 없다.
+    $btn.addEventListener('mouseover', () => alert('마우스 올렸대요~'));
+</script>
+<button id="btn2">더블 클릭해보세요</button>
+<script>
+    const $btn2 = document.querySelector('#btn2');
+    const handleDoubleClick = () => alert('더블클릭했대요~');
+    $btn2.ondblclick = handleDoubleClick; // 이벤트 핸들러 등록
+    // 이벤트 핸들러 제거 X
+    $btn2.removeEventListener('dblclick', handleDoubleClick);
+    $btn2.ondblclick = null;    // 이벤트 핸들러 제거 O
+</script>
+</body>
+</html>
