@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    function increase(number) {
+
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                const result = number + 10;
+                // 실패시
+                if (result > 30) {
+                    const e = new Error('Number Too Big');
+                    return reject(e);
+                }
+                // 성공시
+                resolve(result);
+            }, 1000);
+        });
+    }
+
+    // Promise 객체 자체를 반환 받아서는 프로퍼티를 꺼낼 수 있다
+    console.log(increase(0));
+
+    // Promise 객체 반환 시 then 을 사용하여 비동기 동작 이후 수행동작 작성가능
+    increase(0)
+        .then(number => {
+            console.log(number);
+            return increase(number);
+        })
+        .then(number => {
+            console.log(number);
+            return increase(number);
+        })
+        .then(number => {
+            console.log(number);
+            return increase(number);
+        })
+        .catch(e => {
+            console.log(e);
+        })
+</script>
+</body>
+</html>

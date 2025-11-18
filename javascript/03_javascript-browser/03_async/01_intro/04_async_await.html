@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    function increase(number) {
+
+        return new Promise((r, j) => {
+            setTimeout(() => {
+                const result = number + 10;
+                // 실패시
+                if (result > 30) {
+                    const e = new Error('Number Too Big');
+                    return j(e);
+                }
+                // 성공시
+                r(result);
+            }, 1000);
+        });
+    }
+
+
+    async function run(){
+        try{
+            let result = await increase(0);
+            console.log(result);
+            result = await increase(result);
+            console.log(result);
+            result = await increase(result);
+            console.log(result);
+            result = await increase(result);
+            console.log(result)
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    run(0);
+
+</script>
+</body>
+</html>

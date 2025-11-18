@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- Vue 3 CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+<div id="step01">
+    <h2>상품 주문 예제</h2>
+    <!--
+        v-model : 입력 요소와 Vue 반응형 데이터를 연결한다.
+    -->
+    <p>상품 가격 : <input type="number" v-model.number="price"></p>
+    <p>수량 : <input type="number" v-model.number="quantity"></p>
+    <p>price : {{ price }}</p>
+    <p>quantity : {{ quantity }}</p>
+    <p>total : {{ total }}</p>
+    <hr>
+    <h2>문자열 길이 예제</h2>
+    <p>메세지 : <input type="text" v-model="message"></p>
+    <p>message : {{ message }}</p>
+    <p>메세지 길이 : {{ messageLength }}</p>
+</div>
+<script>
+    const { createApp, ref, computed } = Vue;
+    createApp({
+        setup() {
+            const price = ref(1000);
+            const quantity = ref(1);
+            const message = ref('');
+
+            /* const total = () => {
+                console.log('total 함수 호출');
+                return price.value * quantity.value;
+            }*/
+
+            /* computed : 캐싱 되는 파생 데이터
+            * 함수 내부에서 접근한 반응형 데이터가 의존성이 되며 종속 된 값이 변경 되었을 때만
+            * computed 함수가 다시 계산 된다. */
+            const total = computed(() => {
+               console.log('computed total 호출');
+                return price.value * quantity.value;
+            });
+
+            /* const messageLength = () => {
+                console.log('messageLength 호출');
+                return message.value.length;
+            }*/
+            const messageLength = computed(() => {
+                console.log('computed messageLength 호출');
+                return message.value.length;
+            });
+
+            return {
+                price,
+                quantity,
+                message,
+                total,
+                messageLength
+            }
+        }
+    }).mount('#step01');
+</script>
+</body>
+</html>

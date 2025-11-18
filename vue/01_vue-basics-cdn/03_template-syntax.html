@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- Vue 3 CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        .static-box {
+            width: 150px;
+            height: 80px;
+            border: 1px solid #ddd;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        .active {
+            background-color: lightcoral;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div id="step01">
+    <h3>텍스트 보간/v-text/v-html</h3>
+    <!--
+        텍스트 보간법, 머스타취 문법 : 반응형 값을 화면에 출력할 때 사용
+    -->
+    <p>message: {{ message }}</p>
+    <!--
+        v-text 디렉티브 : 요소의 textContent 전체를 message로 교체한다.
+    -->
+    <p v-text="message"></p>
+    <p v-text="'message: ' + message"></p>
+    <!--
+        v-html 디렉티브
+        문자열을 HTML 코드로 해석해서 렌더링 한다.
+        단, 외부 입력에 v-html을 사용할 경우 XSS 공격에 취약하므로 신뢰할 수 있는 데이터에만 사용한다.
+    -->
+    <p>{{ richText }}</p>
+    <p v-html="richText"></p>
+</div>
+
+<div id="step02">
+    <h3>속성 바인딩(v-bind / : )</h3>
+    <!--
+        v-bind: 의 축약형은 : 이다.
+        HTML 속성(id, class, src, href 등)에 반응형 값을 연결할 때 사용한다.
+    -->
+    <div v-bind:id="elementId">elementId : {{ elementId }}</div>
+    <div :id="elementId">elementId : {{ elementId }}</div>
+    <h3>disabled 속성 바인딩</h3>
+    <input :value="disabledLabel" :disabled="isDisabled">
+    <button @click="toggleDisable">
+        상태 토글 : {{ isDisabled }}
+    </button>
+</div>
+
+<div id="step03">
+    <h3>클래스 바인딩(:class)</h3>
+
+    <!--
+      :class="{ active: isHighlighted }"
+      객체 문법을 사용한 클래스 바인딩
+    -->
+    <div
+            class="static-box"
+            :class="{ active: isHighlighted }"
+    >
+        isHighlighted: {{ isHighlighted }}
+    </div>
+
+    <!--
+      :class="boxClasses"
+      boxClasses가 { active: true } 이면 "active" 클래스 추가
+      여러 클래스를 동시에 관리할 때, 객체로 넘길 수 있다.
+    -->
+    <div
+            class="static-box"
+            :class="boxClasses"
+    >
+        boxClasses.active: {{ boxClasses.active }}
+    </div>
+
+    <button @click="toggleHighlight">클래스 토글</button>
+</div>
+
+<div id="step04">
+    <h3>여러 속성 한 번에 바인딩</h3>
+
+    <!--
+      v-bind="inputAttrs"
+      inputAttrs가 { id: 'multi-input', class: 'multi-class', placeholder: '...' } 이면
+      <input id="multi-input" class="multi-class" placeholder="..."> 와 같이 렌더링 된다.
+      여러 속성을 한 번에 바인딩할 때 편리
+    -->
+    <input v-bind="inputAttrs">
+    <button @click="logInputAttrs">
+        콘솔에서 inputAttrs 확인
+    </button>
+</div>
+
+<div id="step05">
+    <h3>이벤트 바인딩(v-on / @) + 수식어</h3>
+
+    <p>count: {{ count }}</p>
+    <button @click="increaseCount">count++</button>
+
+    <p>알림 버튼 예제</p>
+    <div>누른 횟수: {{ alertCount }}</div>
+    <!-- 인자를 가진 함수 호출도 가능하다. -->
+    <button @click="notify('알림')">
+        알림
+    </button>
+
+    <p>키보드 이벤트 + .enter 예제</p>
+    <!--
+      @keyup.enter="handleEnterKey($event)"
+      keyup 이벤트 중 Enter 키를 눌렀을 때만 handleEnterKey를 실행한다.
+      $event는 실제 DOM 이벤트 객체이다.
+    -->
+    <input
+            type="text"
+            placeholder="Enter 키를 눌러 보세요"
+            @keyup.enter="handleEnterKey($event)"
+    >
+
+    <hr>
+
+    <p>기본 동작 방지(.prevent), 전파 방지(.stop), 1회만(.once)</p>
+
+    <!--
+      .prevent
+      a 태그의 기본 동작(클릭 시 href로 이동)을 막는다.
+      form 제출이나 링크 이동을 막고 싶을 때 사용한다.
+    -->
+    <a
+            href="https://www.google.com"
+            @click.prevent="handleLinkClick"
+    >
+        구글로 이동하지 않는 링크
+    </a>
+
+    <br><br>
+
+    <!--
+      .stop
+      이벤트 버블링(자식에서 부모로 전파)을 막는다.
+      아래 예제에서 버튼은 click 이벤트를 부모 div로 전달하지 않는다.
+    -->
+    <div @click="handleParentClick">
+        <button @click.stop="handleChildClick">
+            버블링 테스트 버튼
+        </button>
+    </div>
+
+    <br>
+
+    <!--
+      .once
+      이벤트가 "한 번만" 동작하도록 한다.
+      첫 번째 클릭에서는 동작하고, 이후에는 무시된다.
+    -->
+    <button @click.once="handleOnceClick">
+        한번만 동작하는 버튼
+    </button>
+</div>
+
+
+<script>
+    const { createApp, ref, reactive } = Vue;
+    createApp({
+        setup() {
+            const message = ref('Hello, Vue!');
+            const richText = ref('<span style="color:red;">HTML 입니다.</span>');
+
+            return {
+                message,
+                richText
+            }
+        }
+    }).mount('#step01');
+
+    createApp({
+        setup() {
+            const elementId = ref('area');
+            const disabledLabel = ref('값을 입력하세요');
+            const isDisabled = ref(false);
+            const toggleDisable = () => {
+                isDisabled.value = !isDisabled.value;
+            };
+            return {
+                elementId,
+                disabledLabel,
+                isDisabled,
+                toggleDisable
+            }
+        }
+    }).mount('#step02');
+
+    createApp({
+        setup() {
+            const isHighlighted = ref(true);
+            const boxClasses = reactive({
+                active: true
+            });
+
+            const toggleHighlight = () => {
+                isHighlighted.value = !isHighlighted.value;
+                boxClasses.active = !boxClasses.active;
+                console.log('boxClasses:', boxClasses);
+            };
+
+            return {
+                isHighlighted,
+                boxClasses,
+                toggleHighlight
+            };
+        }
+    }).mount('#step03');
+
+    createApp({
+        setup() {
+            const inputAttrs = ref({
+                id: 'multi-input',
+                class: 'multi-class',
+                placeholder: 'v-bind="inputAttrs" 예제'
+            });
+
+            const logInputAttrs = () => {
+                console.log('inputAttrs 전체 객체:', inputAttrs.value);
+            };
+
+            return {
+                inputAttrs,
+                logInputAttrs
+            };
+        }
+    }).mount('#step04');
+
+    createApp({
+        setup() {
+            const count = ref(0);
+            const alertCount = ref(0);
+
+            const increaseCount = () => {
+                count.value++;
+            };
+
+            const notify = (label) => {
+                alertCount.value++;
+                alert(`${label}: ${alertCount.value}번 클릭`);
+            };
+
+            const handleEnterKey = (event) => {
+                alert(`Enter 입력 값: ${event.target.value}`);
+            };
+
+            const handleLinkClick = () => {
+                console.log('링크의 기본 이동이 막혔습니다.');
+            };
+
+            const handleParentClick = () => {
+                console.log('부모 div 클릭');
+            };
+
+            const handleChildClick = () => {
+                console.log('자식 button 클릭 (부모로 전파되지 않음)');
+            };
+
+            const handleOnceClick = () => {
+                console.log('이 메시지는 한 번만 출력됩니다.');
+            };
+
+            return {
+                count,
+                alertCount,
+                increaseCount,
+                notify,
+                handleEnterKey,
+                handleLinkClick,
+                handleParentClick,
+                handleChildClick,
+                handleOnceClick
+            };
+        }
+    }).mount('#step05');
+</script>
+</body>
+</html>
