@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- Vue 3 CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+<div id="step01">
+    <h1>watch 기본 사용</h1>
+    <input type="text" v-model="currentValue" placeholder="텍스트 입력">
+    <p>currentValue : {{ currentValue }}</p>
+    <p>previousValue : {{ previousValue }}</p>
+</div>
+<div id="step02">
+    <h1>여러 개의 값 감시 예제</h1>
+    <button @click="x++">x++</button>
+    <button @click="y++">y++</button>
+    <button @click="z++">z++</button>
+    <p>{{ x }} / {{ y }} / {{ z }}</p>
+    <p>sum : {{ sum }}</p>
+</div>
+<div id="step03">
+    <h1>watch 옵션 예제</h1>
+    <button @click="num++">num++</button>
+    <button @click="num2++">num2++</button>
+    <p>num : {{ num }}</p>
+    <p>num2 : {{ num2 }}</p>
+</div>
+<div id="step04">
+    <h1>watchEffect 예제</h1>
+    <button @click="num++">num++</button>
+    <p>num : {{ num }}</p>
+</div>
+<script>
+    const { createApp, ref, watch, watchEffect } = Vue;
+    /* watch
+    * 사용 용도 : 어떤 값이 변경 됨에 따라 API 호출을 해야 할 때, 입력 값이 바뀌면 실시간 검증해야 할 때, 값 변경 이력 저장
+    * computed 와의 차이 : 새로운 값을 계산하는 용도 vs 값이 달라졌을 때 어떤 행동을 실행 하는 용도(side effect)
+    * */
+    createApp({
+        setup() {
+            const currentValue = ref('');
+            const previousValue = ref('');
+
+            watch(currentValue, (newVal, oldVal) => {
+                console.log(`newVal : ${newVal}, oldVal : ${oldVal}`);
+                previousValue.value = oldVal;
+            })
+
+            return { currentValue, previousValue };
+        }
+    }).mount('#step01');
+
+    createApp({
+        setup() {
+            const x = ref(0);
+            const y = ref(0);
+            const z = ref(0);
+            const sum = ref(0);
+
+            /*watch([x, y], () => {
+               console.log('배열에 담긴 값의 변경 감시');
+            });*/
+
+            watch(
+                () => x.value + y.value,
+                (newResult, oldResult) => {
+                    console.log('x + y 변경 : ', oldResult, '->', newResult);
+                    sum.value = newResult;
+                }
+            )
+
+            return  { x, y, z, sum }
+        }
+    }).mount('#step02');
+
+    createApp({
+        setup(){
+            const num = ref(0);
+            const num2 = ref(0);
+            /* immediate 옵션 : 즉시 실행
+            * 초기 페이지 로딩 시 API 호출이 필요한 경우 등에 사용 */
+            watch(num, () => {
+                console.log('[immediate] 옵션 동작 테스트');
+            }, { immediate : true })
+
+            /* once 옵션 : 단 한 번 실행
+            * 최초 1회만 메세지를 보여주는 경우 등에 사용 */
+            watch(num2, () => {
+                console.log('[once] 옵션 동작 테스트');
+            }, { once : true })
+
+            return { num, num2 }
+        }
+    }).mount('#step03');
+
+    createApp({
+        setup(){
+            const num = ref(0);
+            /* watchEffect
+            * 콜백함수 내부에서 접근한 반응형 변수들이 자동으로 감시 된다.
+            * 여러 값이 반응하여 부수 효과를 실행해야 하거나 특정 변수를 명확히 골라서 감시하기 어려울 때 사용한다.
+            * */
+            watchEffect(() => {
+                console.log(`watchEffect - num : ${num.value}`);
+            });
+            return {
+                num
+            }
+        }
+    }).mount('#step04');
+
+
+</script>
+</body>
+</html>
