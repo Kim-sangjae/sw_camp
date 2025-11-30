@@ -18,6 +18,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -37,8 +42,12 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+        http
+        // CORS 설정 활성화
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         // CSRF 처리 비활성화 (default가 활성화이므로 작성)
-        http.csrf(AbstractHttpConfigurer::disable)
+        .csrf(AbstractHttpConfigurer::disable)
         // 세션 로그인 X -> 토큰 로그인 설정으로 진행
         .sessionManagement(
                 session -> session.sessionCreationPolicy(
@@ -76,8 +85,22 @@ public class SecurityConfig {
     }
 
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
 
+        // Vue 개발 서버 origin
+        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        config.setAllowCredentials(true);       // 쿠키(RefreshToken) 허용
+        config.setMaxAge(3600L);
 
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        // 모든 경로에 위 설정 적용
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
 
 
 }
