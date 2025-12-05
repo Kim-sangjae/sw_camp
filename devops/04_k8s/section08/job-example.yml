@@ -1,0 +1,22 @@
+# job-example.yml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: job-example
+spec:
+
+  backoffLimit: 3     # 실패 시 최대 3번 재시도
+  # completions: 1     # 작업을 몇 번 성공해야 완료로 볼지(기본 1)
+  # parallelism: 1     # 동시에 몇 개의 Pod를 실행할지(기본 1)
+
+  template:
+    spec:
+      containers:
+        - name: worker
+          image: busybox
+          command: ["sh", "-c", "echo '작업 실행 중...'; sleep 10; echo '작업 완료'"]
+
+      # Job에서는 Never 또는 OnFailure만 가능
+      # - Never: Pod 실패 시 Job이 새로운 Pod를 만들어 재시도 (가장 일반적)
+      # - OnFailure: Pod가 오류로 종료될 때만 재시작 (컨테이너 내부 재시작)
+      restartPolicy: Never

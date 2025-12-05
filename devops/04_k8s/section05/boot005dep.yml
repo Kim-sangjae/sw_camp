@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: boot005dep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: boot005kube
+  template:
+    metadata:
+      labels:
+        app: boot005kube
+    spec:
+      containers:
+        - name: boot-container
+          image: limu810/k8s-boot-ing:latest
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: database_url
+            - name: TIMEOUT
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config
+                  key: timeout
+            - name: USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: username
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: password

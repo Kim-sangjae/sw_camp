@@ -1,0 +1,25 @@
+# resource-limit.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resource-limit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resource-limit
+  template:
+    metadata:
+      labels:
+        app: resource-limit
+    spec:
+      containers:
+        - name: stress
+          image: polinux/stress
+          resources:  # 컨테이너 자원 요청/제한
+            requests:
+              memory: "64Mi"   # 최소 필요 메모리
+            limits:
+              memory: "128Mi"  # 최대 사용 가능 메모리
+          command: ["stress"]
+          args: ["--vm", "1", "--vm-bytes", "256M", "--vm-hang", "1"]

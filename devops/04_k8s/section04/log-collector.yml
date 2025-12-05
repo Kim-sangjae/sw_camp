@@ -1,0 +1,22 @@
+# log-collector.yml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: log-collector
+spec:
+  containers:
+    - name: web-app
+      image: busybox
+      command: ["sh", "-c", "while true; do echo $(date) Hello from web app >> /var/log/webapp.log; sleep 5; done"]
+      volumeMounts:
+        - name: logs
+          mountPath: /var/log
+    - name: log-monitor
+      image: busybox
+      command: ["sh", "-c", "tail -f /var/log/webapp.log"]
+      volumeMounts:
+        - name: logs
+          mountPath: /var/log
+  volumes:
+    - name: logs
+      emptyDir: {}

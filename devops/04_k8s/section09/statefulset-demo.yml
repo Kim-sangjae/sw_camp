@@ -1,0 +1,30 @@
+# statefulset-demo.yml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: stateful-demo
+spec:
+  serviceName: "stateful-demo"   # 각 Pod에 고정 DNS를 부여하기 위한 Headless Service 이름
+  replicas: 2                    # 생성할 Pod 수
+  selector:
+    matchLabels:
+      app: stateful-demo         # StatefulSet이 관리할 Pod 선택 라벨
+  template:
+    metadata:
+      labels:
+        app: stateful-demo
+    spec:
+      containers:
+        - name: web
+          image: nginx
+          volumeMounts:
+            - name: data         # Pod마다 생성되는 PVC 이름
+              mountPath: /usr/share/nginx/html
+  volumeClaimTemplates:          # Pod 수만큼 자동으로 PVC 생성하는 템플릿
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 1Gi         # 각 Pod에 부여될 디스크 크기

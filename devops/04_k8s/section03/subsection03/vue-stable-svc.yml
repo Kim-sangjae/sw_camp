@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: vue-stable-svc
+spec:
+  selector:
+    app: vue-canary
+    track: stable
+  ports:
+    - port: 8000
+      targetPort: 80

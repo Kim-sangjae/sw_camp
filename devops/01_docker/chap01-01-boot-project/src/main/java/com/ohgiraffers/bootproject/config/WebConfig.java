@@ -10,7 +10,10 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:5173")    // docker container port로 설정
+//                .allowedOrigins("http://localhost:5173")    // docker container port로 설정
+//                .allowedOrigins("http://localhost:30000")    // NodePod 설정시
+                //Ingress 설정 시 내부 요청이므로 cors 설정 불필요
+                .allowedOrigins("")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
 
     }

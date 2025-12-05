@@ -6,7 +6,11 @@ const num2 = ref(0);
 const result = ref(0);
 
 const sendPlus = async () => {
-  const response = await fetch(`http://localhost:8080/plus?num1=${num1.value}&num2=${num2.value}`);
+  // const response = await fetch(`http://localhost:8080/plus?num1=${num1.value}&num2=${num2.value}`);
+  //nodepod 적용시
+  // const response = await fetch(`http://localhost:8080/plus?num1=${num1.value}&num2=${num2.value}`);
+  //ingress 적용 시
+  const response = await fetch(`/boot/plus?num1=${num1.value}&num2=${num2.value}`);
   const data = await response.json();
   result.value = data.sum;
 }

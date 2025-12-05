@@ -1,0 +1,11 @@
+# statefulset-headless.yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: stateful-demo
+spec:
+  clusterIP: None        # Headless Service: Pod별 고유 DNS 부여
+  selector:
+    app: stateful-demo
+  ports:
+    - port: 80

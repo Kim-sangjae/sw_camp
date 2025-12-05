@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vue-stable-dep
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: vue-canary
+      track: stable
+  template:
+    metadata:
+      labels:
+        app: vue-canary
+        track: stable
+    spec:
+      containers:
+        - name: vue-container
+          image: limu810/k8s-vue-ing:v1
+          ports:
+            - containerPort: 80

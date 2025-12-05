@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vue-canary-dep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vue-canary
+      track: canary
+  template:
+    metadata:
+      labels:
+        app: vue-canary
+        track: canary
+    spec:
+      containers:
+        - name: vue-container
+          image: limu810/k8s-vue-ing:v2
+          ports:
+            - containerPort: 80

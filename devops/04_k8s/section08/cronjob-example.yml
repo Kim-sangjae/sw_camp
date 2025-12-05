@@ -1,0 +1,39 @@
+# cronjob-example.yml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cronjob-example
+spec:
+
+  # Cron 표현식: "*/1 * * * *" → 1분마다 실행
+  # 형식: 분 시 일 월 요일
+  schedule: "*/1 * * * *"
+
+  # Job이 기한 내에 시작되지 못했을 때 처리 방식 (기본값: 100초)
+  # - "Forbid": 기한 지나면 실행하지 않음 (중복 실행 방지)
+  # - "Replace": 기존 Job을 종료하고 새로운 Job 실행
+  # - "Allow": 기한 지나도 실행
+  # concurrencyPolicy: Forbid
+
+  # 만약 Job이 너무 오래 실행되면 강제로 중단 설정 가능
+  # activeDeadlineSeconds: 30   # 30초 넘으면 Job 강제 종료
+
+  # 스케줄에 의해 만들어진 Job의 보존 개수 설정
+  # historyLimit을 적절히 관리하지 않으면 오래된 Job이 너무 많이 쌓일 수 있음
+  successfulJobsHistoryLimit: 3   # 성공 Job 보관 최대 3개
+  failedJobsHistoryLimit: 1       # 실패 Job 보관 최대 1개
+
+  jobTemplate:
+    spec:
+      # 실패 시 몇 번까지 재시도할지 (기본값: 6)
+      backoffLimit: 3
+
+      template:
+        spec:
+          containers:
+            - name: worker
+              image: busybox
+              command: ["sh", "-c", "date; echo 'CronJob 실행'"]
+
+          # CronJob 내부 Job 역시 restartPolicy는 Never 또는 OnFailure만 가능
+          restartPolicy: Never

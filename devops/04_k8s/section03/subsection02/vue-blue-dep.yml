@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vue-blue-dep
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: vue-bg
+      version: blue
+  template:
+    metadata:
+      labels:
+        app: vue-bg
+        version: blue
+    spec:
+      containers:
+        - name: vue-container
+          image: limu810/k8s-vue-ing:v1
+          ports:
+            - containerPort: 80
